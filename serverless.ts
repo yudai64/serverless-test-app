@@ -5,7 +5,11 @@ import hello from "@functions/hello";
 const serverlessConfiguration: AWS = {
   service: "serverless-test-app",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild", "serverless-offline"], // 必要なプラグインをここに設定
+  plugins: [
+    "serverless-esbuild",
+    "serverless-dynamodb-local",
+    "serverless-offline",
+  ], // 必要なプラグインをここに設定
   provider: {
     name: "aws",
     runtime: "nodejs14.x",
@@ -18,6 +22,15 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
+      NODE_ENV: process.env.NODE_ENV,
+    },
+    iam: {
+      role: {
+        managedPolicies: [
+          "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+          "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
+        ],
+      },
     },
   },
   // import the function via paths
@@ -33,6 +46,44 @@ const serverlessConfiguration: AWS = {
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10,
+    },
+    dynamodb: {
+      stages: ["dev"],
+      start: {
+        port: 8000,
+        dbpath: "dynamodb",
+        heapInitial: "200m",
+        heapMax: "1g",
+        migrate: true,
+        seed: true,
+        convertEmptyValues: true,
+      },
+    },
+  },
+  resources: {
+    Resources: {
+      usersTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "usersTable",
+          AttributeDefinitions: [
+            {
+              AttributeName: "email",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "email",
+              KeyType: "HASH",
+            },
+          ],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1,
+          },
+        },
+      },
     },
   },
 };
