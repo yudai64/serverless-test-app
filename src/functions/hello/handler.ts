@@ -29,4 +29,4 @@ const hello: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   });
 };
 
-export const main = middyfy(hello);
+export const main = middyfy(hello, schema);
