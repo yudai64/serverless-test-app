@@ -18,6 +18,8 @@
   },
   "scripts": {
     "start": "PORT=8000 react-scripts start",
+    "generate-client": "openapi-generator-cli generate -g typescript-fetch -i openapi/openapi.yaml -o ./src/api-client --additional-properties=typescriptThreePlus=true",
+    "generate-api-doc": "redoc-cli bundle openapi/openapi.yaml",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -40,5 +42,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3000"
+  "proxy": "http://localhost:3000",
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.5.2",
+    "redoc-cli": "^0.13.20"
+  }
 }

@@ -1,8 +1,20 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Configuration, UserApi } from './api-client';
 
 function App() {
+  async function createUser() {
+    const api = new UserApi(new Configuration({ basePath: '/dev/' }))
+    const response = await api.createUser({
+      createUser: {
+        email: 'test2@example.com',
+        username: 'test2',
+      }
+    })
+    console.log(response)
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -10,14 +22,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <button className="App-link" onClick={createUser}>
+          Create User
+        </button>
       </header>
     </div>
   );
